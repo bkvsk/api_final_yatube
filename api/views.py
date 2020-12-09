@@ -1,13 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
-from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
+
 from .models import Group, Post
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
-                          PostSerializer)
+from .serializers import (CommentSerializer, FollowSerializer,
+                          GroupSerializer, PostSerializer)
 
 
 class CreateListRetrieveViewSet(mixins.CreateModelMixin,
@@ -57,7 +57,4 @@ class FollowViewSet(CreateListRetrieveViewSet):
         return user.following.all()
 
     def perform_create(self, serializer):
-        user = self.request.user
-        if user.username == self.request.data['following']:
-            raise ValidationError("You can't following yourself")
-        serializer.save(user=user)
+        serializer.save(user=self.request.user)
